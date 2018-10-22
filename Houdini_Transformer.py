@@ -41,6 +41,16 @@ def translate_light():
         light.setGenericFlag(hou.nodeFlag.DisplayComment, True)
         light.setComment(comment)
 
+# TODO: ADD ATTRIBUTES TO RSLIGHT
+# intensity = 'multiplier' x
+# exposure =  x
+# color = 'tintcolor' x
+# affect Diffuse x
+# Affect Specular x
+# Bi-directional
+# visibile
+# aovLightGroup
+
 
     # Display creation message
     # hou.ui.displayMessage('Lights have been generated!')
