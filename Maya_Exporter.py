@@ -25,11 +25,15 @@ def attribute_maker(attributes,lamps):
         dicts['filename'] = raw_name
     return lamp_dict
 
+
+# TODO: WRAP IN FUNCTION
 json = json.dumps(attribute_maker(attributes,lamps))
 file = open('C:\\Users\\render\\Desktop\\redshiftscript\\rs_mayaLampAttr\\lamp_dict.json', 'w')
 file.write(json)
 file.close()
 
+# TODO: WRAP IN TRY IF NO LIGHTS ARE SELECTED ERROR,
+# AND FINALLY GIVE MESSAGE TO USER 'LIGHT DATA HAS BEEN EXPORTED!"
 
 attribute_maker(attributes, lamps)
 
