@@ -15,8 +15,10 @@ def create_light(name):
 
 
 def read_json():
-    """ reads out a json and returns a list of dict """
-    read_file = open("C:\\Users\\render\\Desktop\\redshiftscript\\rs_mayaLampAttr\\lamp_dict.json", "r")
+    """ let user select the attribute filepath to read  """
+    filepath = hou.ui.selectFile()
+    newpath = filepath.replace('/', '\\')
+    read_file = open('{}'.format(newpath), 'r')
     lampattr = json.load(read_file)
     return lampattr
 
@@ -40,6 +42,9 @@ def translate_light():
         # create comment-description for each light
         light.setGenericFlag(hou.nodeFlag.DisplayComment, True)
         light.setComment(comment)
+
+def attributes_light():
+    """ add all the attributes to the light"""
 
 # TODO: ADD ATTRIBUTES TO RSLIGHT
 # intensity = 'multiplier' x
