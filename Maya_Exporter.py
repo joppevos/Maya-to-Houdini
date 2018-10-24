@@ -14,16 +14,15 @@ def list_lamps():
     else:
         return lamps
 
-
+# TODO: ADD NORMALIZE ATTRIBUTE
 # attribute keys to place in dict
-attributes = ['scale', 'rotate', 'translate', 'intensity', 'exposure', 'color', 'affectsDiffuse', 'affectsSpecular',
+attributes = ['scale', 'rotate', 'translate', 'intensity', 'color', 'affectsDiffuse', 'affectsSpecular',
               'areaVisibleInRender', 'areaBidirectional', 'volumeRayContributionScale']
 
 
 # list of dict with attr keys and lamp in lamps
 def attribute_maker(attributes, lamps):
     lamp_dict = [{attr: cmds.getAttr('{}.{}'.format(lamp, attr)) for attr in attributes} for lamp in lamps]
-
     # get the scene name of maya
     filepath = cmds.file(q=True, sn=True)
     filename = os.path.basename(filepath)
@@ -36,8 +35,10 @@ def attribute_maker(attributes, lamps):
     return lamp_dict
 
 
+
 def filepath():
     """ ask user for local file path to save and returns the give path"""
+    TODO: GIVE A PROMPT WINDOW TO WITH FILE BROWSWER FROM MAYA
     result = cmds.promptDialog(
         title='Rename Object',
         message=" Enter a 'LOCAL' path (C:\\Users\\render\\examplename):  ",
@@ -65,6 +66,5 @@ json = json.dumps(attribute_maker(attributes, list_lamps()))
 
 write_attributes(json)
 
-# AND FINALLY GIVE MESSAGE TO USER 'LIGHT DATA HAS BEEN EXPORTED!"
 
 

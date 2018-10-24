@@ -8,17 +8,18 @@ def create_light(name):
     # Get scene root node
     sceneroot = hou.node('/obj/')
     # Create light
-    light = sceneroot.createNode('hlight::2.0', '{}'.format(name))
-    light.setParms({'light_type': 'grid'})
+    light = sceneroot.createNode('rslight', '{}'.format(name))
+    light.setParms({'light_type': 3})
     return light
 
 
 def read_json():
     """ let user select the attribute filepath to read  """
-
-    filepath = hou.ui.selectFile()
-    newpath = filepath.replace('/', '\\')
-    read_file = open('{}'.format(newpath), 'r')
+    # TODO: FIX FILE PATH SELECTOR
+    #filepath = hou.ui.selectFile()
+    #print(filepath)
+    #newpath = filepath.replace('/', '\\')
+    read_file = open('C:\Users\Joppe\Desktop\\rs.json', 'r')
     lampattr = json.load(read_file)
     return lampattr
 
@@ -34,33 +35,35 @@ def translate_light():
         comment = lamp.get('filename')
         rotations = lamp.get('rotate')
         scales = lamp.get('scale')
+        colors = lamp.get('color')
         for translate in translates:
             light.setParms({'tx': translate[0], 'ty': translate[1], 'rz': translate[2]})
         for rotation in rotations:
             light.setParms({'rx': rotation[0], 'ry': rotation[1], 'rz': rotation[2]})
         for scale in scales:
             light.setParms({'areasize1': scale[0], 'areasize2': scale[1]})
+        for color in colors:
+            light.setParms({'light_colorr': color[0], 'light_colorg': color[1], 'light_colorb': color[2]})
+        light.setParms({'light_intensity': lamp.get('intensity')})
+        # TODO: CLEAN UP IN FORLOOP WITH LIST
+        light.setParms({'RSL_affectDiffuse': lamp.get('affectsDiffuse')})
+        light.setParms({'RSL_affectSpecular': lamp.get('affectsSpecular')})
+        light.setParms({'RSL_bidirectional': lamp.get('areaBidirectional')})
+        light.setParms({'RSL_visible': lamp.get('areaVisibleInRender')})
+        light.setParms({'RSL_volumeScale': lamp.get('volumeRayContributionScale')})
 
         # create comment-description for each light
         light.setGenericFlag(hou.nodeFlag.DisplayComment, True)
         light.setComment(comment)
 
 
-def attributes_light():
-    """ add all the attributes to the light"""
-
-# TODO: ADD ATTRIBUTES TO RSLIGHT
-# intensity = 'multiplier' x
-# exposure =  x
-# color = 'tintcolor' x
-# affect Diffuse x
-# Affect Specular x
-# Bi-directional
-# visibile
-# aovLightGroup
-# volumeRayContributionScale
 
 
+
+# TODO: ADD ATTRIBUTES TO A FUNCTION RSLIGHT
+
+
+# TODO: WANRING FOR 'AFFECT DIFFUSE/SPECULAR FROM MAYA. NOT AVAILABLE IN HOUDINI' double check it?
     # Display creation message
     # hou.ui.displayMessage('Lights have been generated!')
 
