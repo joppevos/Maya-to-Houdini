@@ -6,16 +6,16 @@ def create_light(name):
     """ create lights in the scene"""
 
     # Get scene root node
-    sceneRoot = hou.node('/obj/')
+    sceneroot = hou.node('/obj/')
     # Create light
-    light = sceneRoot.createNode('hlight::2.0', '{}'.format(name))
+    light = sceneroot.createNode('hlight::2.0', '{}'.format(name))
     light.setParms({'light_type': 'grid'})
-
     return light
 
 
 def read_json():
     """ let user select the attribute filepath to read  """
+
     filepath = hou.ui.selectFile()
     newpath = filepath.replace('/', '\\')
     read_file = open('{}'.format(newpath), 'r')
@@ -25,6 +25,7 @@ def read_json():
 
 def translate_light():
     """ position the light with correct scale,rotation and translation """
+
     lampattr = read_json()
     for lamp in lampattr:
         name = lamp.get('name')
@@ -39,9 +40,11 @@ def translate_light():
             light.setParms({'rx': rotation[0], 'ry': rotation[1], 'rz': rotation[2]})
         for scale in scales:
             light.setParms({'areasize1': scale[0], 'areasize2': scale[1]})
+
         # create comment-description for each light
         light.setGenericFlag(hou.nodeFlag.DisplayComment, True)
         light.setComment(comment)
+
 
 def attributes_light():
     """ add all the attributes to the light"""
@@ -55,6 +58,7 @@ def attributes_light():
 # Bi-directional
 # visibile
 # aovLightGroup
+# volumeRayContributionScale
 
 
     # Display creation message
