@@ -15,13 +15,13 @@ def create_light(name):
 
 def read_json():
     """ let user select the attribute filepath to read  """
-    # TODO: FIX FILE PATH SELECTOR
-    #filepath = hou.ui.selectFile()
-    #print(filepath)
-    #newpath = filepath.replace('/', '\\')
-    read_file = open('C:\Users\Joppe\Desktop\\rs.json', 'r')
-    lampattr = json.load(read_file)
-    return lampattr
+    filepath = hou.ui.selectFile()
+    if filepath.lower().endswith('.json'):
+        read_file = open('{}'.format(filepath), 'r')
+        lampattr = json.load(read_file)
+        return lampattr
+    else:
+        hou.ui.displayMessage('Please select a .json file ')
 
 
 def translate_light():
@@ -32,40 +32,36 @@ def translate_light():
         name = lamp.get('name')
         light = create_light(name)
         translates = lamp.get('translate')
-        comment = lamp.get('filename')
         rotations = lamp.get('rotate')
         scales = lamp.get('scale')
         colors = lamp.get('color')
         for translate in translates:
-            light.setParms({'tx': translate[0], 'ty': translate[1], 'rz': translate[2]})
+            light.setParms({'tx': translate[0], 'ty': translate[1], 'tz': translate[2]})
         for rotation in rotations:
             light.setParms({'rx': rotation[0], 'ry': rotation[1], 'rz': rotation[2]})
         for scale in scales:
-            light.setParms({'areasize1': scale[0], 'areasize2': scale[1]})
+            light.setParms({'areasize1': scale[0]+1, 'areasize2': scale[1]+1})
         for color in colors:
             light.setParms({'light_colorr': color[0], 'light_colorg': color[1], 'light_colorb': color[2]})
-        light.setParms({'light_intensity': lamp.get('intensity')})
-        # TODO: CLEAN UP IN FORLOOP WITH LIST
-        light.setParms({'RSL_affectDiffuse': lamp.get('affectsDiffuse')})
-        light.setParms({'RSL_affectSpecular': lamp.get('affectsSpecular')})
-        light.setParms({'RSL_bidirectional': lamp.get('areaBidirectional')})
-        light.setParms({'RSL_visible': lamp.get('areaVisibleInRender')})
-        light.setParms({'RSL_volumeScale': lamp.get('volumeRayContributionScale')})
-
-        # create comment-description for each light
-        light.setGenericFlag(hou.nodeFlag.DisplayComment, True)
-        light.setComment(comment)
+        set_attributes(light, lamp)
 
 
+def set_attributes(light, lamp):
+    """ set the attributes for the light """
+    comment = lamp.get('filename')
+    light.setParms({'light_intensity': lamp.get('intensity')})
+    light.setParms({'RSL_affectDiffuse': lamp.get('affectsDiffuse')})
+    light.setParms({'RSL_affectSpecular': lamp.get('affectsSpecular')})
+    light.setParms({'RSL_bidirectional': lamp.get('areaBidirectional')})
+    light.setParms({'RSL_visible': lamp.get('areaVisibleInRender')})
+    light.setParms({'RSL_volumeScale': lamp.get('volumeRayContributionScale')})
+    # create comment-description for each light
+    light.setGenericFlag(hou.nodeFlag.DisplayComment, True)
+    light.setComment(comment)
 
 
-
-# TODO: ADD ATTRIBUTES TO A FUNCTION RSLIGHT
-
-
-# TODO: WANRING FOR 'AFFECT DIFFUSE/SPECULAR FROM MAYA. NOT AVAILABLE IN HOUDINI' double check it?
     # Display creation message
-    # hou.ui.displayMessage('Lights have been generated!')
+    hou.ui.displayMessage('Lights have been generated!')
 
 
 # call function

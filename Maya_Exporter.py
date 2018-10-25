@@ -1,5 +1,6 @@
 import maya.cmds as cmds
-import json, os
+import json
+import os
 
 """ Export the attributes of each light in Maya """
 
@@ -13,6 +14,7 @@ def list_lamps():
         raise error
     else:
         return lamps
+
 
 # TODO: ADD NORMALIZE ATTRIBUTE
 # attribute keys to place in dict
@@ -38,25 +40,15 @@ def attribute_maker(attributes, lamps):
 
 def filepath():
     """ ask user for local file path to save and returns the give path"""
-    TODO: GIVE A PROMPT WINDOW TO WITH FILE BROWSWER FROM MAYA
-    result = cmds.promptDialog(
-        title='Rename Object',
-        message=" Enter a 'LOCAL' path (C:\\Users\\render\\examplename):  ",
-        button=['OK', 'Cancel'],
-        defaultButton='OK',
-        cancelButton='Cancel',
-        dismissString='Cancel')
-
-    if result == 'OK':
-        text = cmds.promptDialog(query=True, text=True)
-        return text
+    basicFilter = "*.json"
+    filepath = cmds.fileDialog2(fileFilter=basicFilter, dialogStyle=2)
+    return filepath
 
 
 def write_attributes(attrdict):
     """ Write out the attributes in json"""
-    filename = filepath()
-    file = open('{}.json'.format(filename), 'w')
-    print(file)
+    filename = ''.join(filepath())
+    file = open('{}'.format(filename), 'w')
     file.write(attrdict)
     file.close()
     cmds.confirmDialog(title='LightExporter', message='Lights have been exported')
