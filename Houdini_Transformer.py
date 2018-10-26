@@ -10,11 +10,12 @@ def create_light(name):
     # Create light
     light = sceneroot.createNode('rslight', '{}'.format(name))
     light.setParms({'light_type': 3})
-    return light
+    return light, sceneroot
 
 
 def read_json():
     """ let user select the attribute filepath to read  """
+    # TODO: FIX GIVEN FILEPATH $HIP/Desktop/test.json.
     filepath = hou.ui.selectFile()
     if filepath.lower().endswith('.json'):
         read_file = open('{}'.format(filepath), 'r')
@@ -40,16 +41,19 @@ def translate_light():
         for rotation in rotations:
             light.setParms({'rx': rotation[0], 'ry': rotation[1], 'rz': rotation[2]})
         for scale in scales:
-            light.setParms({'areasize1': scale[0]+1, 'areasize2': scale[1]+1})
+            light.setParms({'areasize1': scale[0]*2, 'areasize2': scale[1]*2})
         for color in colors:
             light.setParms({'light_colorr': color[0], 'light_colorg': color[1], 'light_colorb': color[2]})
         set_attributes(light, lamp)
-
+    # Display creation message
+    hou.ui.displayMessage('Lights have been generated!')
+    hou.node(“ / obj”).layoutChildren()
 
 def set_attributes(light, lamp):
     """ set the attributes for the light """
     comment = lamp.get('filename')
-    light.setParms({'light_intensity': lamp.get('intensity')})
+    light.setParms({'RSL_intensityMultiplier': lamp.get('intensity')})
+    light.setParms({'Light1_exposure': lamp.get('exposure')})
     light.setParms({'RSL_affectDiffuse': lamp.get('affectsDiffuse')})
     light.setParms({'RSL_affectSpecular': lamp.get('affectsSpecular')})
     light.setParms({'RSL_bidirectional': lamp.get('areaBidirectional')})
