@@ -5,6 +5,14 @@ import os
 """ Export the attributes of each light in Maya """
 
 
+
+
+# TODO: WORLD-BAKE EACH LAMP
+
+# TODO: EXPORT EACH LAMP AS FBX FILE
+""" 
+    
+"""
 # list the selected lamps in the
 def list_lamps():
     lamps = cmds.ls(selection=True)

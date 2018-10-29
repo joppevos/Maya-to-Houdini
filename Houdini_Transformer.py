@@ -2,6 +2,20 @@ import hou
 import json
 
 
+# TODO:
+# ## set current working directory
+# #os.chdir(r'C:\Users\render\Desktop\\')
+# #os.getcwd()
+# ## import exported fbx
+# #hou.hipFile.importFBX('lamp.fbx')
+#
+# ## TODO: Assign created RSlamp as child to fbx
+#
+# hou.hipFile.importFBX('lamp.fbx')
+# parent = hou.node('/obj/lamp_fbx1/rsPhysicalLight1')
+# print(parent)
+
+
 def create_light(name):
     """ create lights in the scene"""
 
