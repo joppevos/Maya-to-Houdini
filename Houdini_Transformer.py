@@ -10,7 +10,7 @@ def create_light(name):
     # Create light
     light = sceneroot.createNode('rslight', '{}'.format(name))
     light.setParms({'light_type': 3})
-    return light, sceneroot
+    return light
 
 
 def read_json():
@@ -47,7 +47,7 @@ def translate_light():
         set_attributes(light, lamp)
     # Display creation message
     hou.ui.displayMessage('Lights have been generated!')
-    hou.node(“ / obj”).layoutChildren()
+    #hou.node(“ / obj”).layoutChildren()
 
 def set_attributes(light, lamp):
     """ set the attributes for the light """
