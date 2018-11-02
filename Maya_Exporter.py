@@ -4,15 +4,14 @@ import os
 
 """ Export the attributes of each light in Maya """
 
-
-
-
 # TODO: WORLD-BAKE EACH LAMP
 
 # TODO: EXPORT EACH LAMP AS FBX FILE
 """ 
-    
+
 """
+
+
 # list the selected lamps in the
 def list_lamps():
     lamps = cmds.ls(selection=True)
@@ -24,7 +23,19 @@ def list_lamps():
         return lamps
 
 
-# TODO: ADD NORMALIZE ATTRIBUTE
+def key_checker():
+    """ checks lamps for keyframes """
+    lamps = cmds.ls(selection=True)
+    for i in lamps:
+        # check lamps for keyframes
+        connection = ''.join(cmds.listConnections('{}'.format(i)))
+        if connection == 'defaultLightSet':
+            return False    # no keyframes
+        else:
+            return True     # keyframes
+
+
+        # TODO: ADD NORMALIZE ATTRIBUTE
 # attribute keys to place in dict
 attributes = ['scale', 'rotate', 'translate', 'intensity', 'color', 'affectsDiffuse', 'affectsSpecular',
               'areaVisibleInRender', 'areaBidirectional', 'volumeRayContributionScale', 'exposure']
@@ -45,7 +56,6 @@ def attribute_maker(attributes, lamps):
     return lamp_dict
 
 
-
 def filepath():
     """ ask user for local file path to save and returns the give path"""
     basicFilter = "*.json"
@@ -54,12 +64,23 @@ def filepath():
 
 
 def write_attributes(attrdict):
-    """ Write out the attributes in json"""
+    """ Write out the attributes in json and fbx"""
     filename = ''.join(filepath())
     file = open('{}'.format(filename), 'w')
     file.write(attrdict)
     file.close()
+    if key_checker():
+        write_fbx(filename)
     cmds.confirmDialog(title='LightExporter', message='Lights have been exported')
+
+
+def write_fbx(filename):
+    path = os.path.dirname(filename)
+    print(path)
+    fbxpath = '{}/'.format(path) + 'scene' + '.fbx'
+    print(fbxpath)
+    mel.eval('FBXExportBakeComplexAnimation -q; ')  # bake animation
+    mel.eval('FBXExport -f "{}" -s'.format(fbxpath))  # remove -s to export all
 
 
 json = json.dumps(attribute_maker(attributes, list_lamps()))
