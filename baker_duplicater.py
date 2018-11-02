@@ -1,8 +1,9 @@
 import maya.cmds as cmds
 
 
-def world_duplicater(lamps):
+def world_duplicater():
     """ bake lamps to world space and remove from parent"""
+    lamps = cmds.ls(selection=True)
     bakelist = []
     for lamp in lamps:
         par = cmds.listRelatives(lamp, parent=True)

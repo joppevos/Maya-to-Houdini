@@ -23,7 +23,6 @@ def list_lamps():
         return lamps
 
 
-
 def key_checker():
     """ checks lamps for keyframes """
     lamps = cmds.ls(selection=True)
@@ -44,6 +43,7 @@ attributes = ['scale', 'rotate', 'translate', 'intensity', 'color', 'affectsDiff
 
 # list of dict with attr keys and lamp in lamps
 def attribute_maker(attributes, lamps):
+
     lamp_dict = [{attr: cmds.getAttr('{}.{}'.format(lamp, attr)) for attr in attributes} for lamp in lamps]
     # get the scene name of maya
     filepath = cmds.file(q=True, sn=True)
@@ -64,8 +64,9 @@ def filepath():
     return filepath
 
 
-def write_attributes(attrdict):
+def write_attributes(*args):
     """ Write out the attributes in json and fbx"""
+    attrdict = json_maker()
     filename = ''.join(filepath())
     file = open('{}'.format(filename), 'w')
     file.write(attrdict)
@@ -84,11 +85,52 @@ def write_fbx(filename):
     mel.eval('FBXExport -f "{}" -s'.format(fbxpath))  # remove -s to export all
 
 
+def world_duplicater(*AAR):
+    """ bake lamps to world space and remove from parent"""
+    lamps = cmds.ls(selection=True)
+    bakelist = []
+    for lamp in lamps:
+        par = cmds.listRelatives(lamp, parent=True)
+        if par == None:
+            pass  # RUN SCRIPT WITHOUT DUPLICATING AND BAKING
+        else:
+            # duplicate lights
+            duplights = cmds.duplicate(lamp, name=lamp + '_bakedToWorld', rc=True, rr=True)
+            # delete duplicated children
+            childtrentd = cmds.listRelatives(duplights, c=True, pa=True)[1:]
+            for c in childtrentd:
+                cmds.delete(c)
+            # unparent object,add constraints and append it to bake List
+            tobake = cmds.parent(duplights, w=True)
+            bakelist.append(tobake)
+            cmds.parentConstraint(lamp, tobake, mo=False)
+            cmds.scaleConstraint(lamp, tobake, mo=False)
 
 
-json = json.dumps(attribute_maker(attributes, list_lamps()))
+        # get Start and End Frame of Time Slider
+    startframe = cmds.playbackOptions(q=True, minTime=True)
+    endframe = cmds.playbackOptions(q=True, maxTime=True)
+    # bake Animation and delete Constraints
+    for i in bakelist:
+        cmds.bakeResults(i, t=(startframe, endframe))
+        cmds.delete(i[0] + '*Constraint*')
+    cmds.confirmDialog(title='Duplicater', message='Baked and duplicated child lights to worldscale')
 
-write_attributes(json)
+def json_maker():
+    """ collect attributes in attr returns """
+    attr = json.dumps(attribute_maker(attributes, list_lamps()))
+    return attr
+
+def menu():
+    """ menu to start function with buttons"""
+    cmds.window(width=250)
+    cmds.columnLayout(adjustableColumn=True)
+    cmds.button(label='Step1. Select all lights to export', command=world_duplicater)
+    cmds.button(label='Step2. Select all baked-lights and lights without keys', command=write_attributes)
+    cmds.showWindow()
+
+
+menu()
 
 
 
