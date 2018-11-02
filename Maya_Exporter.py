@@ -12,7 +12,7 @@ import os
 """
 
 
-# list the selected lamps in the
+# list selected lamps in scene
 def list_lamps():
     lamps = cmds.ls(selection=True)
     if lamps == []:
@@ -21,6 +21,7 @@ def list_lamps():
         raise error
     else:
         return lamps
+
 
 
 def key_checker():
@@ -81,6 +82,8 @@ def write_fbx(filename):
     print(fbxpath)
     mel.eval('FBXExportBakeComplexAnimation -q; ')  # bake animation
     mel.eval('FBXExport -f "{}" -s'.format(fbxpath))  # remove -s to export all
+
+
 
 
 json = json.dumps(attribute_maker(attributes, list_lamps()))

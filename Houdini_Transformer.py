@@ -83,7 +83,6 @@ def translate_light():
             light.setParms({'light_colorr': color[0], 'light_colorg': color[1], 'light_colorb': color[2]})
         set_attributes(light, lamp)
     # Display creation message
-    hou.ui.displayMessage('Lights have been generated!')
     #hou.node(“ / obj”).layoutChildren()
 
 
@@ -102,10 +101,10 @@ def set_attributes(light, lamp):
     light.setComment(comment)
 
 
-    # Display creation message
-    hou.ui.displayMessage('Lights have been generated!')
 
 
 # call function
 translate_light()
+# Display creation message
+hou.ui.displayMessage('Lights have been generated!')
 
