@@ -22,7 +22,7 @@ def create_light(name):
     # Get scene root node
     sceneroot = hou.node('/obj/scene_fbx/')
     # Create light
-    light = sceneroot.createNode('rslight', '{}'.format(name + 'jood'))
+    light = sceneroot.createNode('rslight', '{}'.format(name + '_H'))
     light.setParms({'light_type': 3})
     return light
 

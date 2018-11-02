@@ -71,8 +71,7 @@ def write_attributes(*args):
     file = open('{}'.format(filename), 'w')
     file.write(attrdict)
     file.close()
-    if key_checker():
-        write_fbx(filename)
+    write_fbx(filename)
     cmds.confirmDialog(title='LightExporter', message='Lights have been exported')
 
 
@@ -85,7 +84,7 @@ def write_fbx(filename):
     mel.eval('FBXExport -f "{}" -s'.format(fbxpath))  # remove -s to export all
 
 
-def world_duplicater(*AAR):
+def world_duplicater(*arg):
     """ bake lamps to world space and remove from parent"""
     lamps = cmds.ls(selection=True)
     bakelist = []
@@ -125,8 +124,8 @@ def menu():
     """ menu to start function with buttons"""
     cmds.window(width=250)
     cmds.columnLayout(adjustableColumn=True)
-    cmds.button(label='Step1. Select all lights to export', command=world_duplicater)
-    cmds.button(label='Step2. Select all baked-lights and lights without keys', command=write_attributes)
+    cmds.button(label='Step1. Select lights to export', command=world_duplicater)
+    cmds.button(label='Step2. Select baked and non-baked lights', command=write_attributes)
     cmds.showWindow()
 
 
