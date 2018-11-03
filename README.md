@@ -23,10 +23,12 @@ Select the .json and see the magic!
 ![0ff36ec841eb3d64d4298753de060f3f](https://user-images.githubusercontent.com/44348300/47940627-8bdd0a00-deeb-11e8-89af-e0f9c20ff044.png)
 
 
-### what not works
+### what does not work?
 
 Only works for physical lights (you should use them 99% of the time).
-In Earlier versions of Redshift, take the latest.
+
+In Earlier versions of Redshift there is a problem, take the latest.
+
 Path select with ``$HIP/Desktop/`` in Houdini does not work.
 
 Just insert ``C:/Users/Desktop/`` as path.
