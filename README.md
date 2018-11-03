@@ -1,10 +1,13 @@
 ##What?
+
 Bring your Redshift light-setup from Maya to Houdini with the click of a button! (two buttons actually) 
 ##Why?
+
 At the moment is FBX the standard format to transfer scenes between different software. The problem is that FBX does not recognize a plugin data and just throws it away.
 It is handy to have exactly the same light-setup in both the software-packages.
 Otherwise the simulation's will not align  when brought together.
 ##How?
+
 Inside Maya, copy the content of the script in the 'Script Editor'. Click 'Add to shelf' to keep it when restarting.
 Run the script and select all the lights you want to export. **Redshift-lights only**
 
@@ -21,6 +24,7 @@ Select the .json and see the magic!
 
 
 ###what not works
+
 Only works for physical lights (you should use them 99% of the time).
 In Earlier versions of Redshift, take the latest.
 Path select with ``$HIP/Desktop/`` in Houdini does not work.
