@@ -1,13 +1,15 @@
 import maya.cmds as cmds
 import json
 import os
+import maya.mel as mel
 
-""" Export the attributes of each light in Maya and export a json and fbx  """
+""" Export the attributes of each light in Maya """
+#TODO: GROUP BAKED LIGHTS AND NORMAL  NON BAKED LIGHTS TO SELECT
+# DELECT THE ONE WITH PARENTS AND ADD THE BakedToworld to selection. group selection
 # list selected lamps in scene
-
-
 def lightexporter():
     """ collected function for use in pipeline call"""
+
     def list_lamps():
         lamps = cmds.ls(selection=True)
         if lamps == []:
@@ -18,18 +20,18 @@ def lightexporter():
             return lamps
 
     def key_checker():
-        """ checks lamps for keyframes NOT USING ATM"""
+        """ checks lamps for keyframes """
         lamps = cmds.ls(selection=True)
         for i in lamps:
             # check lamps for keyframes
             connection = ''.join(cmds.listConnections('{}'.format(i)))
             if connection == 'defaultLightSet':
-                return False    # no keyframes
+                return False  # no keyframes
             else:
-                return True     # keyframes
-
+                return True  # keyframes
 
             # TODO: ADD NORMALIZE ATTRIBUTE
+
     # attribute keys to place in dict
     attributes = ['scale', 'rotate', 'translate', 'intensity', 'color', 'affectsDiffuse', 'affectsSpecular',
                   'areaVisibleInRender', 'areaBidirectional', 'volumeRayContributionScale', 'exposure']
@@ -117,9 +119,4 @@ def lightexporter():
         cmds.showWindow()
 
     menu()
-
-#call function
-#lightexporter()
-
-
 
