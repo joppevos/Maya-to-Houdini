@@ -8,14 +8,10 @@ import os
 # #os.getcwd()
 # ## import exported fbx
 # #hou.hipFile.importFBX('lamp.fbx')
-#
-# ## TODO: Assign created RSlamp as child to fbx
-#
-# hou.hipFile.importFBX('lamp.fbx')
-# parent = hou.node('/obj/lamp_fbx1/rsPhysicalLight1')
-# print(parent)
 
-
+# TODO: MAKE ALL LIGHTS CHILD OF NULL TO ADJUST SCALE TO 0.01
+# TODO: SET AREA SIZE FOR LAMPS TO /100
+# TODO: GET THE AREA SHAPE IN MAYA, CHANGE IT IN HOUDINI
 def create_light(name):
     """ create lights in the scene"""
 
@@ -82,7 +78,6 @@ def translate_light():
         for color in colors:
             light.setParms({'light_colorr': color[0], 'light_colorg': color[1], 'light_colorb': color[2]})
         set_attributes(light, lamp)
-    # Display creation message
     #hou.node(“ / obj”).layoutChildren()
 
 

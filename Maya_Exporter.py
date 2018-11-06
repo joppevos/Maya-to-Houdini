@@ -4,7 +4,8 @@ import os
 import maya.mel as mel
 
 """ Export the attributes of each light in Maya """
-#TODO: GROUP BAKED LIGHTS AND NORMAL  NON BAKED LIGHTS TO SELECT
+# TODO: GET THE AREA SHAPE IN MAYA, CHANGE IT IN HOUDINI
+# TODO: GROUP BAKED LIGHTS AND NORMAL  NON BAKED LIGHTS TO SELECT
 # DELECT THE ONE WITH PARENTS AND ADD THE BakedToworld to selection. group selection
 # list selected lamps in scene
 def lightexporter():
