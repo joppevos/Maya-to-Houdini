@@ -35,7 +35,7 @@ def lightexporter():
 
     # attribute keys to place in dict
     attributes = ['scale', 'rotate', 'translate', 'intensity', 'color', 'affectsDiffuse', 'affectsSpecular',
-                  'areaVisibleInRender', 'areaBidirectional', 'volumeRayContributionScale', 'exposure']
+                  'areaVisibleInRender', 'areaBidirectional', 'volumeRayContributionScale', 'exposure', 'areaShape']
 
     # list of dict with attr keys and lamp in lamps
     def attribute_maker(attributes, lamps):

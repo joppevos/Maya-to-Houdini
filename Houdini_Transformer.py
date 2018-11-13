@@ -59,7 +59,6 @@ def translate_light():
     import_fbx(path)
     for lamp in lampattr:
         name = lamp.get('name')
-        # TODO: IF ANIMATION YES. IMPORT FBX
         light = create_light(name)
         # Connect lights to Null objects
         houpath = hou.node('/obj/scene_fbx/')
@@ -74,7 +73,7 @@ def translate_light():
         # for rotation in rotations:
         #     light.setParms({'rx': rotation[0], 'ry': rotation[1], 'rz': rotation[2]})
         for scale in scales:
-            light.setParms({'areasize1': scale[0]*2, 'areasize2': scale[1]*2})
+            light.setParms({'areasize1': scale[0]*2, 'areasize2': scale[1]*2, 'areasize3': scale[2]*2})
         for color in colors:
             light.setParms({'light_colorr': color[0], 'light_colorg': color[1], 'light_colorb': color[2]})
         set_attributes(light, lamp)
@@ -91,6 +90,7 @@ def set_attributes(light, lamp):
     light.setParms({'RSL_bidirectional': lamp.get('areaBidirectional')})
     light.setParms({'RSL_visible': lamp.get('areaVisibleInRender')})
     light.setParms({'RSL_volumeScale': lamp.get('volumeRayContributionScale')})
+    light.setParms({'RSL_areaShape': lamp.get('areaShape')})
     # create comment-description for each light
     light.setGenericFlag(hou.nodeFlag.DisplayComment, True)
     light.setComment(comment)
