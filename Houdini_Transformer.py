@@ -2,16 +2,7 @@ import hou
 import json
 import os
 
-# TODO:
-# ## set current working directory
-# #os.chdir(r'C:\Users\render\Desktop\\')
-# #os.getcwd()
-# ## import exported fbx
-# #hou.hipFile.importFBX('lamp.fbx')
 
-# TODO: MAKE ALL LIGHTS CHILD OF NULL TO ADJUST SCALE TO 0.01
-# TODO: SET AREA SIZE FOR LAMPS TO /100
-# TODO: GET THE AREA SHAPE IN MAYA, CHANGE IT IN HOUDINI
 def create_light(name):
     """ create lights in the scene"""
 
@@ -20,17 +11,19 @@ def create_light(name):
     # Create light
     light = sceneroot.createNode('rslight', '{}'.format(name + '_H'))
     light.setParms({'light_type': 3})
-    return light
+    return light, sceneroot
 
 
 def filepath():
     """ ask for file path"""
+
     filepath = hou.ui.selectFile()
     return filepath
 
 
 def read_json():
     """ let user select the attribute filepath to read  """
+
     # TODO: FIX GIVEN FILEPATH $HIP/Desktop/test.json.
     path = filepath()
     if path.lower().endswith('.json'):
@@ -43,12 +36,10 @@ def read_json():
 
 def import_fbx(path):
     """ imports the fbx from each lamp """
+
     newpath = os.path.dirname(path) + '/'
     os.chdir(newpath)
     hou.hipFile.importFBX('scene.fbx')
-    # houpath = hou.node('/obj/{}/'.format(filename))
-    # null = hou.node('/obj/{}/{}/'.format(filename, filename))
-    # light.setInput(0, null, 0)
 
 
 def translate_light():
@@ -57,31 +48,30 @@ def translate_light():
     lampattr, path = read_json()
     # import fbx
     import_fbx(path)
+    sceneroot = hou.node('/obj/scene_fbx/')
+    globalnull = sceneroot.createNode('null', 'size_locator')
+    globalnull.setParms({'scale': 0.01})
     for lamp in lampattr:
         name = lamp.get('name')
-        light = create_light(name)
+        light, sceneroot = create_light(name)
         # Connect lights to Null objects
-        houpath = hou.node('/obj/scene_fbx/')
         null = hou.node('/obj/scene_fbx/{}/'.format(name))
         light.setInput(0, null, 0)
-        translates = lamp.get('translate')
-        rotations = lamp.get('rotate')
+        # connect null's to global null for size
+        null.setInput(0, globalnull, 0)
         scales = lamp.get('scale')
         colors = lamp.get('color')
-        # for translate in translates:
-        #     light.setParms({'tx': translate[0], 'ty': translate[1], 'tz': translate[2]})
-        # for rotation in rotations:
-        #     light.setParms({'rx': rotation[0], 'ry': rotation[1], 'rz': rotation[2]})
         for scale in scales:
-            light.setParms({'areasize1': scale[0]*2, 'areasize2': scale[1]*2, 'areasize3': scale[2]*2})
+            light.setParms({'areasize1': (scale[0]*2)/100, 'areasize2': (scale[1]*2)/100, 'areasize3': (scale[2]*2)/100})
         for color in colors:
             light.setParms({'light_colorr': color[0], 'light_colorg': color[1], 'light_colorb': color[2]})
         set_attributes(light, lamp)
-    #hou.node(“ / obj”).layoutChildren()
+    sceneroot.layoutChildren()
 
 
 def set_attributes(light, lamp):
     """ set the attributes for the light """
+
     comment = lamp.get('filename')
     light.setParms({'RSL_intensityMultiplier': lamp.get('intensity')})
     light.setParms({'Light1_exposure': lamp.get('exposure')})
@@ -94,6 +84,7 @@ def set_attributes(light, lamp):
     # create comment-description for each light
     light.setGenericFlag(hou.nodeFlag.DisplayComment, True)
     light.setComment(comment)
+
 
 
 
