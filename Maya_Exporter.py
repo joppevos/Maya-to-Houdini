@@ -115,7 +115,7 @@ def lightexporter():
         cmds.window(width=250, title='Light Exporter')
         cmds.columnLayout(adjustableColumn=True)
         cmds.button(label='Step1. Bake and duplicate selected lights', command=world_duplicater)
-        cmds.button(label='Step2. Export select lights', command=write_attributes)
+        cmds.button(label='Step2. Export selected lights', command=write_attributes)
         cmds.showWindow()
 
     menu()
