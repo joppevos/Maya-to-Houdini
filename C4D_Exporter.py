@@ -1,30 +1,18 @@
-
 import c4d
 import random
 from c4d import Vector
 
+
+def attr_return(lamp, attr):
+    return eval('lamp[attr]')
+
+
 def main():
-    select = doc.GetActiveObjects(0)
-    dict_variable = [{attr: lamp[c4d.REDSHIFT_LIGHT_PHYSICAL_EXPOSURE] for attr in attributes} for lamp in lamps]
+    attributes = ['c4d.REDSHIFT_LIGHT_PHYSICAL_INTENSITY', 'c4d.REDSHIFT_LIGHT_PHYSICAL_AREA_SIZEX']
+    lamps = doc.GetActiveObjects(0)
+    dict_variable = [{attr: attr_return(lamp, eval(attr)) for attr in attributes} for lamp in lamps]
     print(dict_variable)
-    c4d.EventAdd()
-
-main()
 
 
-import c4d
-#Welcome to the world of Python
-
-def rand():
-    import random
-    x = random.randrange(1,1000,1)
-    return x
-
-def update():
-    obj = doc.GetObjects()
-    v = c4d.Vector(rand(),rand(), rand())
-    obj[0].SetRelPos(v)
-
-def main():
-    if frame%10:
-        update()
+if __name__ == '__main__':
+    main()
