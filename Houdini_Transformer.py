@@ -50,7 +50,7 @@ def translate_light():
     import_fbx(path)
     sceneroot = hou.node('/obj/scene_fbx/')
     globalnull = sceneroot.createNode('null', 'size_locator')
-    globalnull.setParms({'scale': 0.01})
+    globalnull.setParms({'scale': 1})
     for lamp in lampattr:
         name = lamp.get('name')
         light, sceneroot = create_light(name)
@@ -62,7 +62,7 @@ def translate_light():
         scales = lamp.get('scale')
         colors = lamp.get('color')
         for scale in scales:
-            light.setParms({'areasize1': (scale[0]*2)/100, 'areasize2': (scale[1]*2)/100, 'areasize3': (scale[2]*2)/100})
+            light.setParms({'areasize1': (scale[0]*2), 'areasize2': (scale[1]*2), 'areasize3': (scale[2]*2)})
         for color in colors:
             light.setParms({'light_colorr': color[0], 'light_colorg': color[1], 'light_colorb': color[2]})
         set_attributes(light, lamp)
@@ -93,4 +93,3 @@ def set_attributes(light, lamp):
 translate_light()
 # Display creation message
 hou.ui.displayMessage('Lights have been generated!')
-
