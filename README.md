@@ -17,7 +17,7 @@ It will duplicate them outside of the parent and bakes it into the world.
 Select the baked **duplicate** lights and any other light that had no parent.
 Click the lower button and choose a path to export the .json file with all the light-attributes inside.
 
-Open Houdini, open the source editor and run  **houdini_transformer.py**
+Open Houdini > source editor and run  **houdini_transformer.py**
 Select the .json and see the magic! 
 
 ![0ff36ec841eb3d64d4298753de060f3f](https://user-images.githubusercontent.com/44348300/47940627-8bdd0a00-deeb-11e8-89af-e0f9c20ff044.png)
