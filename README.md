@@ -25,9 +25,9 @@ Select the .json and see the magic!
 
 ### what does not work?
 
-Only works for physical lights (you should use them 99% of the time).
+It only works for physical based lights (you should use them 99% of the time eitherway).
 
-In Earlier versions of Redshift there is a problem, take the latest.
+In earlier versions of Redshift there is a bug, take the latest and greatest.
 
 Path select with ``$HIP/Desktop/`` in Houdini does not work.
 
