@@ -5,10 +5,7 @@ import os
 
 def create_light(name):
     """ create lights in the scene"""
-
-    # Get scene root node
     sceneroot = hou.node('/obj/scene_fbx/')
-    # Create light
     light = sceneroot.createNode('rslight', '{}'.format(name + '_H'))
     light.setParms({'light_type': 3})
     return light, sceneroot
@@ -16,15 +13,12 @@ def create_light(name):
 
 def filepath():
     """ ask for file path"""
-
     filepath = hou.ui.selectFile()
     return filepath
 
 
 def read_json():
     """ let user select the attribute filepath to read  """
-
-    # TODO: FIX GIVEN FILEPATH $HIP/Desktop/test.json.
     path = filepath()
     if path.lower().endswith('.json'):
         read_file = open('{}'.format(path), 'r')
@@ -36,7 +30,6 @@ def read_json():
 
 def import_fbx(path):
     """ imports the fbx from each lamp """
-
     newpath = os.path.dirname(path) + '/'
     os.chdir(newpath)
     hou.hipFile.importFBX('scene.fbx')
@@ -44,7 +37,6 @@ def import_fbx(path):
 
 def translate_light():
     """ position the light with correct scale,rotation and translation """
-
     lampattr, path = read_json()
     # import fbx
     import_fbx(path)
@@ -57,10 +49,10 @@ def translate_light():
         # Connect lights to Null objects
         null = hou.node('/obj/scene_fbx/{}/'.format(name))
         light.setInput(0, null, 0)
-        # connect null's to global null for size
         null.setInput(0, globalnull, 0)
         scales = lamp.get('scale')
         colors = lamp.get('color')
+        
         for scale in scales:
             light.setParms({'areasize1': (scale[0]*2), 'areasize2': (scale[1]*2), 'areasize3': (scale[2]*2)})
         for color in colors:
@@ -71,7 +63,6 @@ def translate_light():
 
 def set_attributes(light, lamp):
     """ set the attributes for the light """
-
     comment = lamp.get('filename')
     light.setParms({'RSL_intensityMultiplier': lamp.get('intensity')})
     light.setParms({'Light1_exposure': lamp.get('exposure')})
@@ -85,11 +76,6 @@ def set_attributes(light, lamp):
     light.setGenericFlag(hou.nodeFlag.DisplayComment, True)
     light.setComment(comment)
 
-
-
-
-
-# call function
-translate_light()
-# Display creation message
-hou.ui.displayMessage('Lights have been generated!')
+if __name__ == '__main__':
+    translate_light()
+    hou.ui.displayMessage('Lights have been generated!')
