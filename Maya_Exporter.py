@@ -3,120 +3,92 @@ import json
 import os
 import maya.mel as mel
 
-""" Export the attributes of each light in Maya """
-# TODO: GROUP BAKED LIGHTS AND NORMAL  NON BAKED LIGHTS TO SELECT
-# DELECT THE ONE WITH PARENTS AND ADD THE BakedToworld to selection. group selection
-# list selected lamps in scene
-def lightexporter():
-    """ collected function for use in pipeline call"""
 
-    def list_lamps():
-        lamps = cmds.ls(selection=True)
-        if lamps == []:
-            cmds.confirmDialog(title='Confirm', message='Please select any Lights')
-            error = ValueError('No lights selected')
-            raise error
+def list_all_lamps():
+    lamps = cmds.ls(selection=True)
+    if not lamps:
+        cmds.confirmDialog(title='Confirm', message='Please select any Light')
+    else:
+        return lamps
+
+
+def attribute_generator(attributes, lamps):
+    lamp_dict = [{attr: cmds.getAttr('{}.{}'.format(lamp, attr)) for attr in attributes} for lamp in lamps]
+    filepath = cmds.file(q=True, sn=True)
+    filename = os.path.basename(filepath)
+    raw_name, extension = os.path.splitext(filename)
+    for dicts, name in zip(lamp_dict, lamps):
+        dicts['name'] = name
+        dicts['filename'] = raw_name
+    return lamp_dict
+
+
+def ask_filepath_location():
+    basicFilter = "*.json"
+    filepath = cmds.fileDialog2(fileFilter=basicFilter, dialogStyle=2)
+    return filepath
+
+
+def write_attributes(*args):
+    """ Write out the attributes in json and fbx"""
+    attrdict = write_json()
+    filename = ''.join(ask_filepath_location())
+    file = open('{}'.format(filename), 'w')
+    file.write(attrdict)
+    file.close()
+    write_fbx(filename)
+    cmds.confirmDialog(title='LightExporter', message='Lights have been exported')
+
+
+def write_fbx(filename):
+    path = os.path.dirname(filename)
+    fbxpath = '{}/'.format(path) + 'scene' + '.fbx'
+    mel.eval('FBXExportBakeComplexAnimation -q; ')  # bake animation
+    mel.eval('FBXExport -f "{}" -s'.format(fbxpath))  # remove -s to export all
+
+
+def world_duplicater(*arg):
+    """ bake lamps to world space and remove from parent"""
+    lamps = cmds.ls(selection=True)
+    bakelist = []
+    for lamp in lamps:
+        par = cmds.listRelatives(lamp, parent=True)
+        if not par:
+            continue
         else:
-            return lamps
+            duplicated_lamps = cmds.duplicate(lamp, name=lamp + '_bakedToWorld', rc=True, rr=True)
+            children = cmds.listRelatives(duplicated_lamps, c=True, pa=True)[1:]
+            for child in children:
+                cmds.delete(child)
+            tobake = cmds.parent(duplicated_lamps, w=True)
+            bakelist.append(tobake)
+            cmds.parentConstraint(lamp, tobake, mo=False)
+            cmds.scaleConstraint(lamp, tobake, mo=False)
 
-    def key_checker():
-        """ checks lamps for keyframes """
-        lamps = cmds.ls(selection=True)
-        for i in lamps:
-            # check lamps for keyframes
-            connection = ''.join(cmds.listConnections('{}'.format(i)))
-            if connection == 'defaultLightSet':
-                return False  # no keyframes
-            else:
-                return True  # keyframes
+        # get Start and End Frame of Time Slider
+    startframe = cmds.playbackOptions(q=True, minTime=True)
+    endframe = cmds.playbackOptions(q=True, maxTime=True)
+    for i in bakelist:
+        cmds.bakeResults(i, t=(startframe, endframe))
+        cmds.delete(i[0] + '*Constraint*')
+    cmds.confirmDialog(title='Duplicater', message='Baked and duplicated child lights to worldscale')
 
-            # TODO: ADD NORMALIZE ATTRIBUTE
 
-    # attribute keys to place in dict
+def write_json():
     attributes = ['scale', 'rotate', 'translate', 'intensity', 'color', 'affectsDiffuse', 'affectsSpecular',
                   'areaVisibleInRender', 'areaBidirectional', 'volumeRayContributionScale', 'exposure', 'areaShape']
+    attr = json.dumps(attribute_generator(attributes, list_all_lamps()))
+    return attr
 
-    # list of dict with attr keys and lamp in lamps
-    def attribute_maker(attributes, lamps):
 
-        lamp_dict = [{attr: cmds.getAttr('{}.{}'.format(lamp, attr)) for attr in attributes} for lamp in lamps]
-        # get the scene name of maya
-        filepath = cmds.file(q=True, sn=True)
-        filename = os.path.basename(filepath)
-        raw_name, extension = os.path.splitext(filename)
+def launch_interface():
+    """ menu to start function with buttons"""
+    cmds.window(width=250, title='Light Exporter')
+    cmds.columnLayout(adjustableColumn=True)
+    cmds.button(label='Step1. Bake and duplicate selected lights', command=world_duplicater)
+    cmds.button(label='Step2. Export selected lights', command=write_attributes)
+    cmds.showWindow()
 
-        # add the name of the lamps to lamp_dict and the filename of scene to dict
-        for dicts, name in zip(lamp_dict, lamps):
-            dicts['name'] = name
-            dicts['filename'] = raw_name
-        return lamp_dict
 
-    def filepath():
-        """ ask user for local file path to save and returns the give path"""
-        basicFilter = "*.json"
-        filepath = cmds.fileDialog2(fileFilter=basicFilter, dialogStyle=2)
-        return filepath
-
-    def write_attributes(*args):
-        """ Write out the attributes in json and fbx"""
-        attrdict = json_maker()
-        filename = ''.join(filepath())
-        file = open('{}'.format(filename), 'w')
-        file.write(attrdict)
-        file.close()
-        write_fbx(filename)
-        cmds.confirmDialog(title='LightExporter', message='Lights have been exported')
-
-    def write_fbx(filename):
-        path = os.path.dirname(filename)
-        print(path)
-        fbxpath = '{}/'.format(path) + 'scene' + '.fbx'
-        print(fbxpath)
-        mel.eval('FBXExportBakeComplexAnimation -q; ')  # bake animation
-        mel.eval('FBXExport -f "{}" -s'.format(fbxpath))  # remove -s to export all
-
-    def world_duplicater(*arg):
-        """ bake lamps to world space and remove from parent"""
-        lamps = cmds.ls(selection=True)
-        bakelist = []
-        for lamp in lamps:
-            par = cmds.listRelatives(lamp, parent=True)
-            if par == None:
-                pass  # RUN SCRIPT WITHOUT DUPLICATING AND BAKING
-            else:
-                # duplicate lights
-                duplights = cmds.duplicate(lamp, name=lamp + '_bakedToWorld', rc=True, rr=True)
-                # delete duplicated children
-                childtrentd = cmds.listRelatives(duplights, c=True, pa=True)[1:]
-                for c in childtrentd:
-                    cmds.delete(c)
-                # unparent object,add constraints and append it to bake List
-                tobake = cmds.parent(duplights, w=True)
-                bakelist.append(tobake)
-                cmds.parentConstraint(lamp, tobake, mo=False)
-                cmds.scaleConstraint(lamp, tobake, mo=False)
-
-            # get Start and End Frame of Time Slider
-        startframe = cmds.playbackOptions(q=True, minTime=True)
-        endframe = cmds.playbackOptions(q=True, maxTime=True)
-        # bake Animation and delete Constraints
-        for i in bakelist:
-            cmds.bakeResults(i, t=(startframe, endframe))
-            cmds.delete(i[0] + '*Constraint*')
-        cmds.confirmDialog(title='Duplicater', message='Baked and duplicated child lights to worldscale')
-
-    def json_maker():
-        """ collect attributes in attr returns """
-        attr = json.dumps(attribute_maker(attributes, list_lamps()))
-        return attr
-
-    def menu():
-        """ menu to start function with buttons"""
-        cmds.window(width=250, title='Light Exporter')
-        cmds.columnLayout(adjustableColumn=True)
-        cmds.button(label='Step1. Bake and duplicate selected lights', command=world_duplicater)
-        cmds.button(label='Step2. Export selected lights', command=write_attributes)
-        cmds.showWindow()
-
-    menu()
-
+if __name__ == '__main__':
+    launch_interface()
